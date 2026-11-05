@@ -1,8 +1,24 @@
 [project]
-name = "studio-very-test"
-version = "0.1.0"
-description = "Add your description here"
-requires-python = ">=3.12"
+name = "forma-svg-studio"
+version = "1.0.0"
+description = "Форма — веб-сервис автоматизированной сборки векторных SVG-композиций"
+readme = "README.md"
+requires-python = ">=3.10"
 dependencies = [
-    "nodejs-bin>=18.4.0a4",
+    "fastapi>=0.115,<1.0",
+    "uvicorn>=0.32,<1.0",
+    "defusedxml>=0.7.1,<1.0",
 ]
+
+[dependency-groups]
+dev = [
+    "httpx>=0.28,<1.0",
+    "pytest>=8.3,<10.0",
+]
+
+[project.scripts]
+forma = "main:main"
+
+[tool.pytest.ini_options]
+testpaths = ["backend/tests"]
+pythonpath = ["."]

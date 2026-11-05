@@ -19,7 +19,7 @@ export function exportSvg(composition: Composition, assets: Asset[], scope = '')
   const { width, height, palette } = composition.canvas;
   root.setAttributeNS('http://www.w3.org/2000/xmlns/', 'xmlns', NS); root.setAttribute('width', String(width)); root.setAttribute('height', String(height)); root.setAttribute('viewBox', `0 0 ${width} ${height}`);
   const background = document.createElementNS(NS, 'rect');
-  background.setAttribute('width', String(width)); background.setAttribute('height', String(height)); background.setAttribute('fill', PALETTES[palette].background); root.append(background);
+  background.setAttribute('width', String(width)); background.setAttribute('height', String(height)); background.setAttribute('fill', (PALETTES[palette] ?? PALETTES.lavender).background); root.append(background);
   for (const element of [...composition.elements].sort((a, b) => a.zIndex - b.zIndex)) {
     if (element.hidden) continue;
     const asset = assets.find(a => a.id === element.objectId);

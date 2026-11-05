@@ -1,9 +1,21 @@
 export type Role = 'main' | 'background';
 export type Size = 'S' | 'L';
-export type PaletteId = 'lavender' | 'peach' | 'mint';
+export type BuiltinPaletteId = 'lavender' | 'peach' | 'mint';
+export type PaletteId = BuiltinPaletteId | (string & {});
 export type FormatId = 'square' | 'landscape' | 'portrait' | 'story';
 export type Strategy = 'central' | 'diagonal' | 'asymmetric' | 'triangle' | 'hero' | 'decorative';
 export type ColorRole = 'mainObjectColors' | 'accents' | 'shadows' | 'outlines' | 'backgroundDecorations';
+export interface PaletteDefinition {
+  id: PaletteId;
+  name: string;
+  label: string;
+  background: string;
+  backgroundDecorations: readonly string[];
+  mainObjectColors: readonly string[];
+  accents: readonly string[];
+  shadows: readonly string[];
+  outlines: readonly string[];
+}
 export interface SvgSource { svg: string; viewBox: [number, number, number, number]; aspectRatio: number; }
 export interface Asset {
   id: string; name: string; category: string; tags: string[]; keywords: string[];

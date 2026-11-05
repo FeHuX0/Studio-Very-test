@@ -19,15 +19,38 @@ export function sourceColors(asset: Asset): string[] {
   }
   return [...colors];
 }
+export function autoMapAssetColors(asset: Asset): Record<string, ColorRole> {
+  const colors = sourceColors(asset);
+  const next: Record<string, ColorRole> = { ...asset.colorMap };
+  const hexToLum = (hex: string): number => {
+    const clean = hex.replace('#', '');
+    const full = clean.length === 3 ? clean.split('').map(c => c + c).join('') : clean.slice(0, 6);
+    if (full.length !== 6) return 0.5;
+    const r = parseInt(full.slice(0, 2), 16) / 255;
+    const g = parseInt(full.slice(2, 4), 16) / 255;
+    const b = parseInt(full.slice(4, 6), 16) / 255;
+    return 0.2126 * r + 0.7152 * g + 0.0722 * b;
+  };
+  colors.forEach((color, index) => {
+    if (next[color]) return;
+    const lum = color.startsWith('#') ? hexToLum(color) : 0.5;
+    if (lum < 0.24) next[color] = 'outlines';
+    else if (lum < 0.42) next[color] = 'shadows';
+    else if (index === colors.length - 1 && colors.length > 2) next[color] = 'accents';
+    else next[color] = 'mainObjectColors';
+  });
+  return next;
+}
 export function coloredSvg(asset: Asset, role: Role, size: Size, paletteId: PaletteId, prefix: string): string {
   const source = sourceFor(asset, role, size);
   if (!source) throw new Error(`Нет исходного варианта ${role} у «${asset.name}».`);
   const document = new DOMParser().parseFromString(source.svg, 'image/svg+xml');
   const root = document.documentElement;
-  const palette = PALETTES[paletteId];
+  const palette = PALETTES[paletteId] ?? PALETTES.lavender;
   const safePrefix = prefix.replace(/[^A-Za-z0-9_-]/g, '_');
   const nodes = [root, ...root.querySelectorAll('*')];
   const mapEntries = Object.keys(asset.colorMap).sort();
+  const isCustomPalette = !['lavender', 'peach', 'mint'].includes(paletteId);
   for (const node of nodes) {
     for (const attribute of [...node.attributes]) {
       let value = attribute.value;
@@ -41,7 +64,7 @@ export function coloredSvg(asset: Asset, role: Role, size: Size, paletteId: Pale
         const semantic = node.getAttribute('data-color-role') as ColorRole | null;
         const explicit = Object.hasOwn(asset.colorMap, key) ? asset.colorMap[key] : undefined;
         const mapped = semantic && ['mainObjectColors', 'accents', 'shadows', 'outlines', 'backgroundDecorations'].includes(semantic) ? semantic : explicit;
-        if (mapped && asset.allowedPalettes.includes(paletteId)) {
+        if (mapped && (isCustomPalette || asset.allowedPalettes.includes(paletteId))) {
           const bucket = role === 'background' ? palette.backgroundDecorations : palette[mapped === 'backgroundDecorations' ? 'mainObjectColors' : mapped];
           value = bucket[Math.max(0, mapEntries.indexOf(key)) % bucket.length];
         }

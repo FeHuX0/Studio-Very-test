@@ -34,7 +34,7 @@ def create_app(data_dir: Path | None = None) -> FastAPI:
         if request.url.path.startswith("/api"):
             # Local app: forbid cross-origin writes, including browser form posts.
             origin = request.headers.get("origin")
-            if origin and origin not in {f"http://127.0.0.1:{port}" for port in (5173, 4173, 8000)} | {f"http://localhost:{port}" for port in (5173, 4173, 8000)}:
+            if origin and origin not in {f"http://127.0.0.1:{port}" for port in (3000, 5173, 4173, 8000)} | {f"http://localhost:{port}" for port in (3000, 5173, 4173, 8000)}:
                 return JSONResponse({"detail": "Недопустимый источник запроса"}, status_code=403)
             if request.method in {"POST", "PUT", "PATCH"}:
                 if "application/json" not in request.headers.get("content-type", ""):

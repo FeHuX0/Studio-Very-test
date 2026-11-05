@@ -7,7 +7,7 @@ from .svg import parse_svg
 
 Role = Literal["main", "background"]
 Size = Literal["S", "L"]
-Palette = Literal["lavender", "peach", "mint"]
+Palette = str
 FORMATS = {"square": (1080, 1080), "landscape": (1600, 900), "portrait": (1080, 1350), "story": (1080, 1920)}
 
 class StrictModel(BaseModel):
@@ -36,7 +36,7 @@ class Asset(StrictModel):
     sizeVariants: list[Size] = Field(min_length=1, max_length=2)
     sources: dict[str, SvgSource]
     colorMap: dict[str, Literal["mainObjectColors", "accents", "shadows", "outlines", "backgroundDecorations"]]
-    allowedPalettes: list[Palette] = Field(max_length=3)
+    allowedPalettes: list[Palette] = Field(max_length=20)
     demo: bool = False
     warnings: list[str] = Field(default_factory=list, max_length=100)
     placement: dict[Literal["maxRotation"], float] | None = None

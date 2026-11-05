@@ -10,7 +10,7 @@ export interface StudioState {
   title: string; assets: Asset[]; composition: Composition; variants: Composition[]; selectedIds: string[];
   selectedElement: string | null; past: Composition[]; future: Composition[]; notice: string | null;
   setTitle: (title: string) => void; selectElement: (id: string | null) => void;
-  toggleAsset: (id: string) => void; addAssets: (assets: Asset[]) => void; updateAsset: (id: string, patch: Partial<Pick<Asset, 'tags' | 'keywords' | 'colorMap'>>) => void;
+  toggleAsset: (id: string) => void; setSelectedIds: (ids: string[]) => void; addAssets: (assets: Asset[]) => void; updateAsset: (id: string, patch: Partial<Pick<Asset, 'tags' | 'keywords' | 'colorMap'>>) => void;
   commit: (composition: Composition) => void; preview: (composition: Composition) => void; checkpoint: () => void;
   setVariants: (variants: Composition[], activeIndex?: number) => void; setPalette: (id: PaletteId) => void; setFormat: (id: FormatId) => void;
   updateElement: (id: string, patch: Partial<ElementInstance>, history?: boolean) => void;
@@ -22,6 +22,7 @@ export const useStudio = create<StudioState>()(persist((set, get) => ({
   selectedIds: ['demo-cards', 'demo-orbit', 'demo-blocks'], selectedElement: null, past: [], future: [], notice: null,
   setTitle: title => set({ title }), selectElement: id => set({ selectedElement: id }),
   toggleAsset: id => set(state => ({ selectedIds: state.selectedIds.includes(id) ? state.selectedIds.filter(v => v !== id) : [...state.selectedIds, id] })),
+  setSelectedIds: selectedIds => set({ selectedIds }),
   addAssets: assets => {
     const merged = mergeAssets(get().assets, assets);
     if (merged.length > 200 || new TextEncoder().encode(JSON.stringify(merged)).length > 18*1024*1024) throw new Error('Лимит библиотеки: 200 объектов и 18 МБ исходников. Сохраните текущий проект и начните новую библиотеку.');
