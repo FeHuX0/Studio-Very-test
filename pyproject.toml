@@ -1,0 +1,8 @@
+[project]
+name = "studio-very-test"
+version = "0.1.0"
+description = "Add your description here"
+requires-python = ">=3.12"
+dependencies = [
+    "nodejs-bin>=18.4.0a4",
+]
